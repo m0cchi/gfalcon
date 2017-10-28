@@ -1,8 +1,6 @@
 package complex
 
 import (
-	"errors"
-
 	"github.com/m0cchi/gfalcon"
 	"github.com/m0cchi/gfalcon/model"
 	"github.com/m0cchi/gfalcon/util"
@@ -45,22 +43,6 @@ func updateSession(db gfsql.DB, user *model.User, sessionID string) error {
 	_, err = stmt.Exec(args)
 
 	return err
-}
-
-func (session *Session) Validate() error {
-	if session != nil {
-		return errors.New("session is nil")
-	}
-
-	if session.SessionID == "" {
-		return errors.New("SessionID is required field")
-	}
-
-	sub := time.Since(session.UpdateDate)
-	if sub.Hours() <= EXPIRATION_INTERVAL {
-		return errors.New("session has expired")
-	}
-	return nil
 }
 
 func AuthenticateWithPassword(db gfsql.DB, user *model.User, password string) (*Session, error) {
