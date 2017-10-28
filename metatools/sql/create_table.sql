@@ -1,0 +1,91 @@
+-- DROP TABLE IF EXISTS ``;
+DROP TABLE IF EXISTS `sessions`;
+DROP TABLE IF EXISTS `passwords`;
+DROP TABLE IF EXISTS `roles`;
+DROP TABLE IF EXISTS `groups`;
+DROP TABLE IF EXISTS `users`;
+DROP TABLE IF EXISTS `teams`;
+DROP TABLE IF EXISTS `actions`;
+DROP TABLE IF EXISTS `services`;
+
+CREATE TABLE `services`(
+  `iid` INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
+  `id` VARCHAR(50) NOT NULL,
+  `create_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  INDEX(`id`),
+  UNIQUE(`id`)
+);
+
+CREATE TABLE `actions`(
+  `iid` INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
+  `service_iid` INT UNSIGNED NOT NULL,
+  `id` VARCHAR(100) NOT NULL,
+  `create_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(`service_iid`,`id`),
+  FOREIGN KEY(`service_iid`) REFERENCES `services`(`iid`)
+);
+
+CREATE TABLE `teams`(
+  `iid` INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
+  `id` VARCHAR(24) NOT NULL,
+  `create_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  INDEX(`id`),
+  UNIQUE(`id`)
+);
+
+CREATE TABLE `users`(
+  `iid` INT UNSIGNED AUTO_INCREMENT NOT NULL,
+  `team_iid` INT UNSIGNED NOT NULL,
+  `id` VARCHAR(24) NOT NULL,
+  `create_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY(`iid`,`team_iid`),
+  INDEX(`team_iid`,`id`),
+  UNIQUE(`id`),
+  FOREIGN KEY(`team_iid`) REFERENCES `teams`(`iid`)
+);
+
+CREATE TABLE `groups`(
+  `iid` INT UNSIGNED AUTO_INCREMENT NOT NULL,
+  `team_iid` INT UNSIGNED NOT NULL,
+  `id` VARCHAR(24) NOT NULL,
+  `create_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY(`iid`,`team_iid`),
+  INDEX(`id`),
+  UNIQUE(`team_iid`,`id`),
+  FOREIGN KEY(`team_iid`) REFERENCES `teams`(`iid`)
+);
+
+CREATE TABLE `roles`(
+  `iid` INT UNSIGNED AUTO_INCREMENT NOT NULL,
+  `team_iid` INT UNSIGNED NOT NULL,
+  `id` VARCHAR(24) NOT NULL,
+  `create_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY(`iid`,`team_iid`),
+  INDEX(`id`),
+  UNIQUE(`team_iid`, `id`),
+  FOREIGN KEY(`team_iid`) REFERENCES `teams`(`iid`)
+);
+
+CREATE TABLE `passwords`(
+  `team_iid` INT UNSIGNED NOT NULL,
+  `user_iid` INT UNSIGNED NOT NULL,
+  `password` VARCHAR(512) NOT NULL,
+  `create_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY(`user_iid`,`team_iid`),
+  FOREIGN KEY(`team_iid`) REFERENCES `teams`(`iid`),
+  FOREIGN KEY(`user_iid`) REFERENCES `users`(`iid`)
+);
+
+CREATE TABLE `sessions`(
+  `team_iid` INT UNSIGNED NOT NULL,
+  `user_iid` INT UNSIGNED NOT NULL,
+  `session` VARCHAR(44) NOT NULL,
+  `create_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY(`user_iid`,`team_iid`),
+  UNIQUE(`session`),
+  INDEX(`session`),
+  FOREIGN KEY(`team_iid`) REFERENCES `teams`(`iid`),
+  FOREIGN KEY(`user_iid`) REFERENCES `users`(`iid`)
+);
