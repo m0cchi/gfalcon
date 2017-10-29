@@ -2,6 +2,7 @@ package model
 
 import (
 	"errors"
+	"github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	"github.com/m0cchi/gfalcon"
 	"golang.org/x/crypto/bcrypt"
@@ -110,7 +111,6 @@ func GetUser(db gfsql.DB, teamIID uint32, userID string) (*User, error) {
 }
 
 func CreateUser(db gfsql.DB, teamIID uint32, userID string) (*User, error) {
-	// TODO: make error of duplicate entry
 	stmt, err := db.PrepareNamed(SQL_CREATE_USER)
 	if err != nil {
 		return nil, err
@@ -119,6 +119,16 @@ func CreateUser(db gfsql.DB, teamIID uint32, userID string) (*User, error) {
 	args := map[string]interface{}{"team_iid": teamIID, "user_id": userID}
 	result, err := stmt.Exec(args)
 	user := &User{0, teamIID, userID}
+
+	if err != nil {
+		if mysqlErr, ok := err.(*mysql.MySQLError); ok {
+			if mysqlErr.Number == gfsql.ERR_CODE_DUPLICATE_ENTRY {
+				return nil, ErrDuplicate
+			}
+		}
+		return nil, err
+	}
+
 	if c, err := result.LastInsertId(); err == nil {
 		user.IID = uint32(c)
 	}
