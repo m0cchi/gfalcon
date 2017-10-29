@@ -6,3 +6,5 @@
 - Role の作成
 - SSO (SAML?)
 - gRPC で API の呼び出し
+- Log
+- ベンチマーク
