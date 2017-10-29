@@ -9,20 +9,12 @@ import (
 
 const LENGTH_OF_SESSION = 44
 
-// 7 days
-const EXPIRATION_INTERVAL = 1 * 24 * -1
-
 const SQL_GET_SESSION_BY_USER = "SELECT `session`, `update_date` FROM `sessions` WHERE `team_iid` = :team_iid and `user_iid` = :user_iid"
 
 const SQL_UPSERT_SESSIONS = "INSERT INTO `sessions` (`team_iid`,`user_iid`,`session`) VALUES (:team_iid, :user_iid, :session) ON DUPLICATE KEY UPDATE `session` = :session"
 
-type Session struct {
-	SessionID  string    `db:"session"`
-	UpdateDate time.Time `db:"update_date"`
-}
-
-func getSessionID(db gfsql.DB, user *model.User) (*Session, error) {
-	session := &Session{}
+func getSessionID(db gfsql.DB, user *model.User) (*model.Session, error) {
+	session := &model.Session{}
 	stmt, err := db.PrepareNamed(SQL_GET_SESSION_BY_USER)
 	if err != nil {
 		return nil, err
@@ -45,7 +37,7 @@ func updateSession(db gfsql.DB, user *model.User, sessionID string) error {
 	return err
 }
 
-func AuthenticateWithPassword(db gfsql.DB, user *model.User, password string) (*Session, error) {
+func AuthenticateWithPassword(db gfsql.DB, user *model.User, password string) (*model.Session, error) {
 	err := user.MatchPassword(db, password)
 	if err != nil {
 		return nil, err
