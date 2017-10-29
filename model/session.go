@@ -1,10 +1,25 @@
 package model
 
 import (
+	"github.com/m0cchi/gfalcon"
 	"time"
 )
+
+const SQL_GET_SESSION = "SELECT `session`, `update_date` FROM `sessions` WHERE `session` = :session_id"
 
 type Session struct {
 	SessionID  string    `db:"session"`
 	UpdateDate time.Time `db:"update_date"`
+}
+
+func GetSession(db gfsql.DB, sessionID string) (*Session, error) {
+	session := &Session{}
+	stmt, err := db.PrepareNamed(SQL_GET_SESSION)
+	if err != nil {
+		return nil, err
+	}
+	defer stmt.Close()
+	args := map[string]interface{}{"session_id": sessionID}
+	err = stmt.Get(session, args)
+	return session, err
 }
