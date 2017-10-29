@@ -1,12 +1,15 @@
-package complex
+package model
 
 import (
 	"errors"
 	"time"
 )
 
+// 7 days
+const EXPIRATION_INTERVAL = 7 * 24 * -1
+
 func (session *Session) Validate() error {
-	if session != nil {
+	if session == nil {
 		return errors.New("session is nil")
 	}
 
