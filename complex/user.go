@@ -3,20 +3,17 @@ package complex
 import (
 	"errors"
 	"github.com/jmoiron/sqlx"
-
 	"github.com/m0cchi/gfalcon/model"
 )
 
 func createUser(tx *sqlx.Tx, teamIID uint32, userID string, password string) (_ *model.User, error error) {
 	user, err := model.CreateUser(tx, teamIID, userID)
 	if err != nil {
-		tx.Rollback()
 		return nil, err
 	}
 
 	err = user.UpdatePassword(tx, password)
 	if err != nil {
-		tx.Rollback()
 		return nil, err
 	}
 
@@ -32,13 +29,12 @@ func CreateUser(db *sqlx.DB, teamIID uint32, userID string, password string) (_ 
 		if err := recover(); err != nil {
 			error = errors.New("failed create user")
 			tx.Rollback()
+		} else if error != nil {
+			tx.Rollback()
+		} else {
+			error = tx.Commit()
 		}
 	}()
-	user, err := createUser(tx, teamIID, userID, password)
 
-	if err == nil {
-		tx.Commit()
-	}
-
-	return user, err
+	return createUser(tx, teamIID, userID, password)
 }
