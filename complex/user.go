@@ -7,6 +7,22 @@ import (
 	"github.com/m0cchi/gfalcon/model"
 )
 
+func createUser(tx *sqlx.Tx, teamIID uint32, userID string, password string) (_ *model.User, error error) {
+	user, err := model.CreateUser(tx, teamIID, userID)
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	err = user.UpdatePassword(tx, password)
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	return user, err
+}
+
 func CreateUser(db *sqlx.DB, teamIID uint32, userID string, password string) (_ *model.User, error error) {
 	tx, err := db.Beginx()
 	if err != nil {
@@ -18,18 +34,11 @@ func CreateUser(db *sqlx.DB, teamIID uint32, userID string, password string) (_ 
 			tx.Rollback()
 		}
 	}()
-	user, err := model.CreateUser(tx, teamIID, userID)
-	if err != nil {
-		tx.Rollback()
-		return user, err
+	user, err := createUser(tx, teamIID, userID, password)
+
+	if err == nil {
+		tx.Commit()
 	}
 
-	err = user.UpdatePassword(tx, password)
-	if err != nil {
-		tx.Rollback()
-		return user, err
-	}
-
-	tx.Commit()
 	return user, err
 }
