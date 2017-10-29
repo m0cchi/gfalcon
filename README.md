@@ -8,3 +8,4 @@
 - gRPC で API の呼び出し
 - Log
 - ベンチマーク
+- SampleApp(Wiki,ImageStorage)
