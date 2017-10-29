@@ -19,6 +19,9 @@ const SQL_GET_PASSWORD_BY_ID = "SELECT `password` FROM `passwords`, (SELECT `use
 
 const SQL_CREATE_USER = "INSERT INTO `users` (`team_iid`,`id`) VALUE (:team_iid, :user_id)"
 
+const SQL_DELETE_USER_BY_IID = "DELETE FROM `users` WHERE `team_iid` = :team_iid and `iid` = :user_iid"
+const SQL_DELETE_USER_BY_ID = "DELETE FROM `users` WHERE `team_iid` = :team_iid and `id` = :user_id"
+
 type User struct {
 	IID     uint32 `db:"iid"`
 	TeamIID uint32 `db:"team_iid"`
@@ -134,4 +137,46 @@ func CreateUser(db gfsql.DB, teamIID uint32, userID string) (*User, error) {
 	}
 
 	return user, err
+}
+
+func DeleteUserByIID(db gfsql.DB, teamIID uint32, userIID uint32) error {
+	stmt, err := db.PrepareNamed(SQL_DELETE_USER_BY_IID)
+	if err != nil {
+		return err
+	}
+
+	args := map[string]interface{}{"team_iid": teamIID, "user_iid": userIID}
+	_, err = stmt.Exec(args)
+
+	return err
+}
+
+func DeleteUserByID(db gfsql.DB, teamIID uint32, userID string) error {
+	stmt, err := db.PrepareNamed(SQL_DELETE_USER_BY_ID)
+	if err != nil {
+		return err
+	}
+
+	args := map[string]interface{}{"team_iid": teamIID, "user_id": userID}
+	_, err = stmt.Exec(args)
+
+	return err
+}
+
+func (user *User) Delete(db gfsql.DB) error {
+	if user == nil {
+		return errors.New("not specify user")
+	}
+
+	if user.TeamIID == 0 {
+		return errors.New("not specify TeamIID")
+	}
+
+	if user.IID != 0 {
+		return DeleteUserByIID(db, user.TeamIID, user.IID)
+	} else if user.ID != "" {
+		return DeleteUserByID(db, user.TeamIID, user.ID)
+	}
+
+	return errors.New("not specify user")
 }
