@@ -22,7 +22,7 @@ CREATE TABLE `actions`(
   `id` VARCHAR(100) NOT NULL,
   `create_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   UNIQUE(`service_iid`,`id`),
-  FOREIGN KEY(`service_iid`) REFERENCES `services`(`iid`)
+  FOREIGN KEY(`service_iid`) REFERENCES `services`(`iid`) ON DELETE CASCADE
 );
 
 CREATE TABLE `teams`(
@@ -41,7 +41,7 @@ CREATE TABLE `users`(
   PRIMARY KEY(`iid`,`team_iid`),
   INDEX(`team_iid`,`id`),
   UNIQUE(`id`),
-  FOREIGN KEY(`team_iid`) REFERENCES `teams`(`iid`)
+  FOREIGN KEY(`team_iid`) REFERENCES `teams`(`iid`) ON DELETE CASCADE
 );
 
 CREATE TABLE `groups`(
@@ -52,7 +52,7 @@ CREATE TABLE `groups`(
   PRIMARY KEY(`iid`,`team_iid`),
   INDEX(`id`),
   UNIQUE(`team_iid`,`id`),
-  FOREIGN KEY(`team_iid`) REFERENCES `teams`(`iid`)
+  FOREIGN KEY(`team_iid`) REFERENCES `teams`(`iid`) ON DELETE CASCADE
 );
 
 CREATE TABLE `roles`(
@@ -63,7 +63,7 @@ CREATE TABLE `roles`(
   PRIMARY KEY(`iid`,`team_iid`),
   INDEX(`id`),
   UNIQUE(`team_iid`, `id`),
-  FOREIGN KEY(`team_iid`) REFERENCES `teams`(`iid`)
+  FOREIGN KEY(`team_iid`) REFERENCES `teams`(`iid`) ON DELETE CASCADE
 );
 
 CREATE TABLE `passwords`(
@@ -73,8 +73,8 @@ CREATE TABLE `passwords`(
   `create_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY(`user_iid`,`team_iid`),
-  FOREIGN KEY(`team_iid`) REFERENCES `teams`(`iid`),
-  FOREIGN KEY(`user_iid`) REFERENCES `users`(`iid`)
+  FOREIGN KEY(`team_iid`) REFERENCES `teams`(`iid`) ON DELETE CASCADE,
+  FOREIGN KEY(`user_iid`) REFERENCES `users`(`iid`) ON DELETE CASCADE
 );
 
 CREATE TABLE `sessions`(
@@ -86,6 +86,6 @@ CREATE TABLE `sessions`(
   PRIMARY KEY(`user_iid`,`team_iid`),
   UNIQUE(`session`),
   INDEX(`session`),
-  FOREIGN KEY(`team_iid`) REFERENCES `teams`(`iid`),
-  FOREIGN KEY(`user_iid`) REFERENCES `users`(`iid`)
+  FOREIGN KEY(`team_iid`) REFERENCES `teams`(`iid`) ON DELETE CASCADE,
+  FOREIGN KEY(`user_iid`) REFERENCES `users`(`iid`) ON DELETE CASCADE
 );
