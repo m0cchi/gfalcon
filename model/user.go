@@ -9,13 +9,13 @@ import (
 )
 
 const SQL_GET_USER_BY_ID = "SELECT `iid`, `team_iid`, `id` FROM `users` WHERE `team_iid` = :team_iid and `id` = :user_id"
-const SQL_UPSERT_PASSWORD_INSERT_BASE = "INSERT INTO `passwords` (`team_iid`,`user_iid`,`password`) SELECT `users`.`team_iid`, `users`.`iid`, :password as password FROM `users` WHERE `users`.`team_iid` = :team_iid and "
+const SQL_UPSERT_PASSWORD_INSERT_BASE = "INSERT INTO `passwords` (`user_iid`,`password`) SELECT `users`.`iid`, :password as password FROM `users` WHERE "
 const SQL_UPSERT_PASSWORD_UPDATE_BASE = "ON DUPLICATE KEY UPDATE `passwords`.`password` = :password"
 const SQL_UPSERT_PASSWORD_BY_IID = SQL_UPSERT_PASSWORD_INSERT_BASE + "`users`.`iid` = :user_iid " + SQL_UPSERT_PASSWORD_UPDATE_BASE
-const SQL_UPSERT_PASSWORD_BY_ID = SQL_UPSERT_PASSWORD_INSERT_BASE + "`users`.`id` = :user_id " + SQL_UPSERT_PASSWORD_UPDATE_BASE
+const SQL_UPSERT_PASSWORD_BY_ID = SQL_UPSERT_PASSWORD_INSERT_BASE + "`users`.`team_iid` = :team_iid and `users`.`id` = :user_id " + SQL_UPSERT_PASSWORD_UPDATE_BASE
 
-const SQL_GET_PASSWORD_BY_IID = "SELECT `password` FROM `passwords` WHERE `team_iid` = :team_iid and `user_iid` = :user_iid"
-const SQL_GET_PASSWORD_BY_ID = "SELECT `password` FROM `passwords`, (SELECT `user_iid` FROM `users` WHERE `team_iid` = :team_iid and `id` = :user_id) as `filtered` WHERE `passwords`.`team_iid` = :team_iid and `passwords`.`user_iid` = `filtered`.`user_iid`"
+const SQL_GET_PASSWORD_BY_IID = "SELECT `password` FROM `passwords` WHERE `user_iid` = :user_iid"
+const SQL_GET_PASSWORD_BY_ID = "SELECT `password` FROM `passwords`, (SELECT `user_iid` FROM `users` WHERE `team_iid` = :team_iid and `id` = :user_id) as `filtered` WHERE `passwords`.`user_iid` = `filtered`.`user_iid`"
 
 const SQL_CREATE_USER = "INSERT INTO `users` (`team_iid`,`id`) VALUE (:team_iid, :user_id)"
 
