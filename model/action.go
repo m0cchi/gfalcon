@@ -1,6 +1,7 @@
 package model
 
 import (
+	"errors"
 	"github.com/go-sql-driver/mysql"
 	"github.com/m0cchi/gfalcon"
 )
@@ -8,6 +9,9 @@ import (
 const SQL_GET_ACTION_BY_ID = "SELECT `iid`, `service_iid`, `id` FROM `actions` WHERE `id` = :action_id and `service_iid` = :service_iid"
 
 const SQL_CREATE_ACTION = "INSERT INTO `actions` (`service_iid`, `id`) VALUE (:service_iid, :action_id)"
+
+const SQL_DELETE_ACTION_BY_IID = "DELETE FROM `actions` WHERE `iid` = :action_iid and `service_iid` = :service_iid"
+const SQL_DELETE_ACTION_BY_ID = "DELETE FROM `actions` WHERE `id` = :action_id and `service_iid` = :service_iid"
 
 type Action struct {
 	IID        uint32 `db:"iid"`
@@ -54,3 +58,40 @@ func GetAction(db gfsql.DB, serviceIID uint32, actionID string) (*Action, error)
 	return action, err
 }
 
+func DeleteActionByIID(db gfsql.DB, serviceIID uint32, actionIID uint32) error {
+	stmt, err := db.PrepareNamed(SQL_DELETE_ACTION_BY_IID)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	args := map[string]interface{}{"service_iid": serviceIID, "action_iid": actionIID}
+	_, err = stmt.Exec(args)
+	return err
+}
+
+func DeleteActionByID(db gfsql.DB, serviceIID uint32, actionID string) error {
+	stmt, err := db.PrepareNamed(SQL_DELETE_ACTION_BY_ID)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	args := map[string]interface{}{"service_iid": serviceIID, "action_id": actionID}
+	_, err = stmt.Exec(args)
+	return err
+}
+
+func (action *Action) Delete(db gfsql.DB) error {
+	if action == nil || action.ServiceIID < 1 {
+		return errors.New("not specify action")
+	}
+
+	if action.IID != 0 {
+		return DeleteActionByIID(db, action.ServiceIID, action.IID)
+	} else if action.ID != "" {
+		return DeleteActionByID(db, action.ServiceIID, action.ID)
+	}
+
+	return errors.New("not specify action")
+}
