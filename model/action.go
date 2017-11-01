@@ -5,6 +5,8 @@ import (
 	"github.com/m0cchi/gfalcon"
 )
 
+const SQL_GET_ACTION_BY_ID = "SELECT `iid`, `service_iid`, `id` FROM `actions` WHERE `id` = :action_id and `service_iid` = :service_iid"
+
 const SQL_CREATE_ACTION = "INSERT INTO `actions` (`service_iid`, `id`) VALUE (:service_iid, :action_id)"
 
 type Action struct {
@@ -38,3 +40,17 @@ func CreateAction(db gfsql.DB, serviceIID uint32, actionID string) (*Action, err
 
 	return action, err
 }
+
+func GetAction(db gfsql.DB, serviceIID uint32, actionID string) (*Action, error) {
+	stmt, err := db.PrepareNamed(SQL_GET_ACTION_BY_ID)
+
+	if err != nil {
+		return nil, err
+	}
+	defer stmt.Close()
+	action := &Action{}
+	args := map[string]interface{}{"service_iid": serviceIID, "action_id": actionID}
+	err = stmt.Get(action, args)
+	return action, err
+}
+
