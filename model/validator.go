@@ -23,3 +23,22 @@ func (session *Session) Validate() error {
 	}
 	return nil
 }
+
+func (actionLink *ActionLink) Validate() error {
+	if actionLink == nil {
+		return errors.New("action link is nil")
+	}
+
+	if actionLink.Count < 1 {
+		return errors.New("invalid count")
+	}
+
+	if actionLink.ActionIID < 0 {
+		return errors.New("invalid actionIID")
+	}
+
+	if actionLink.UserIID < 0 {
+		return errors.New("invalid userIID")
+	}
+	return nil
+}
