@@ -2,7 +2,6 @@ package complex
 
 import (
 	"errors"
-	"fmt"
 	"github.com/m0cchi/gfalcon"
 	"github.com/m0cchi/gfalcon/model"
 	"github.com/m0cchi/gfalcon/util"
@@ -44,7 +43,7 @@ func AuthenticateWithPassword(db gfsql.DB, user *model.User, password string) (*
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("auth: ", user)
+
 	if user.IID < 1 {
 		if user.TeamIID > 0 {
 			user, err = model.GetUser(db, user.TeamIID, user.ID)
