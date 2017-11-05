@@ -118,7 +118,7 @@ func CreateUser(db gfsql.DB, teamIID uint32, userID string) (*User, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	defer stmt.Close()
 	args := map[string]interface{}{"team_iid": teamIID, "user_id": userID}
 	result, err := stmt.Exec(args)
 	user := &User{0, teamIID, userID}
@@ -144,7 +144,7 @@ func DeleteUserByIID(db gfsql.DB, teamIID uint32, userIID uint32) error {
 	if err != nil {
 		return err
 	}
-
+	defer stmt.Close()
 	args := map[string]interface{}{"team_iid": teamIID, "user_iid": userIID}
 	_, err = stmt.Exec(args)
 
@@ -156,7 +156,7 @@ func DeleteUserByID(db gfsql.DB, teamIID uint32, userID string) error {
 	if err != nil {
 		return err
 	}
-
+	defer stmt.Close()
 	args := map[string]interface{}{"team_iid": teamIID, "user_id": userID}
 	_, err = stmt.Exec(args)
 

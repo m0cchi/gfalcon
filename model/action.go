@@ -24,7 +24,7 @@ func CreateAction(db gfsql.DB, serviceIID uint32, actionID string) (*Action, err
 	if err != nil {
 		return nil, err
 	}
-
+	defer stmt.Close()
 	args := map[string]interface{}{"service_iid": serviceIID, "action_id": actionID}
 	result, err := stmt.Exec(args)
 	action := &Action{0, serviceIID, actionID}
