@@ -10,6 +10,7 @@
 - ベンチマーク
 - SampleApp(Wiki,ImageStorage)
 - CLI経由でモデル操作
+- ModelInfoの実装(UserやServiceを任意に拡張できる)
 
 # Sample App
 ## https://github.com/m0cchi/gfalcon-signin-service
