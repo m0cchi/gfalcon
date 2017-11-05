@@ -9,6 +9,7 @@
 - Log
 - ベンチマーク
 - SampleApp(Wiki,ImageStorage)
+- CLI経由でモデル操作
 
 # Sample App
 ## https://github.com/m0cchi/gfalcon-signin-service
