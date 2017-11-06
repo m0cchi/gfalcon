@@ -17,3 +17,6 @@
 IdP の Sample Application.
 Cookie をサブドメイン間で共有することで SSO を実現する。
 サブドメイン群の中に、非SSLのWebServiceが動いている場合は非推奨。
+
+SampleApp: https://github.com/m0cchi/gfalcon-sso-sample
+![](https://i.gyazo.com/1cde44d51b4356e8cedbc8029b9be131.gif)
