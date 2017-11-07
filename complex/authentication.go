@@ -10,7 +10,7 @@ import (
 
 const LENGTH_OF_SESSION = 44
 
-const SQL_GET_SESSION_BY_USER = "SELECT `session`, `update_date` FROM `sessions` WHERE `user_iid` = :user_iid"
+const SQL_GET_SESSION_BY_USER = "SELECT `session`, `update_date`, `user_iid` FROM `sessions` WHERE `user_iid` = :user_iid"
 
 const SQL_UPSERT_SESSIONS = "INSERT INTO `sessions` (`user_iid`,`session`) VALUES (:user_iid, :session) ON DUPLICATE KEY UPDATE `session` = :session"
 
