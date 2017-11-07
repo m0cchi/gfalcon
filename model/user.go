@@ -19,7 +19,7 @@ const SQL_GET_PASSWORD_BY_ID = "SELECT `password` FROM `passwords`, (SELECT `use
 
 const SQL_CREATE_USER = "INSERT INTO `users` (`team_iid`,`id`) VALUE (:team_iid, :user_id)"
 
-const SQL_DELETE_USER_BY_IID = "DELETE FROM `users` WHERE `team_iid` = :team_iid and `iid` = :user_iid"
+const SQL_DELETE_USER_BY_IID = "DELETE FROM `users` WHERE `iid` = :user_iid"
 const SQL_DELETE_USER_BY_ID = "DELETE FROM `users` WHERE `team_iid` = :team_iid and `id` = :user_id"
 
 type User struct {
@@ -42,14 +42,10 @@ func (user *User) MatchPassword(db gfsql.DB, password string) error {
 	var err error
 	var args interface{}
 
-	if user.TeamIID == 0 {
-		return errors.New("not specify TeamIID")
-	}
-
 	if user.IID != 0 {
 		stmt, err = db.PrepareNamed(SQL_GET_PASSWORD_BY_IID)
-		args = map[string]interface{}{"team_iid": user.TeamIID, "user_iid": user.IID}
-	} else if user.ID != "" {
+		args = map[string]interface{}{"user_iid": user.IID}
+	} else if user.ID != "" && user.TeamIID > 0 {
 		stmt, err = db.PrepareNamed(SQL_GET_PASSWORD_BY_ID)
 		args = map[string]interface{}{"team_iid": user.TeamIID, "user_id": user.ID}
 	} else {
@@ -80,14 +76,10 @@ func (user *User) UpdatePassword(db gfsql.DB, password string) error {
 	var err error
 	var args interface{}
 
-	if user.TeamIID == 0 {
-		return errors.New("not specify TeamIID")
-	}
-
 	if user.IID != 0 {
 		stmt, err = db.PrepareNamed(SQL_UPSERT_PASSWORD_BY_IID)
-		args = map[string]interface{}{"team_iid": user.TeamIID, "user_iid": user.IID, "password": toHash(password)}
-	} else if user.ID != "" {
+		args = map[string]interface{}{"user_iid": user.IID, "password": toHash(password)}
+	} else if user.ID != "" && user.TeamIID > 0 {
 		stmt, err = db.PrepareNamed(SQL_UPSERT_PASSWORD_BY_ID)
 		args = map[string]interface{}{"team_iid": user.TeamIID, "user_id": user.ID, "password": toHash(password)}
 	} else {
@@ -139,13 +131,13 @@ func CreateUser(db gfsql.DB, teamIID uint32, userID string) (*User, error) {
 	return user, err
 }
 
-func DeleteUserByIID(db gfsql.DB, teamIID uint32, userIID uint32) error {
+func DeleteUserByIID(db gfsql.DB, userIID uint32) error {
 	stmt, err := db.PrepareNamed(SQL_DELETE_USER_BY_IID)
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
-	args := map[string]interface{}{"team_iid": teamIID, "user_iid": userIID}
+	args := map[string]interface{}{"user_iid": userIID}
 	_, err = stmt.Exec(args)
 
 	return err
@@ -168,13 +160,9 @@ func (user *User) Delete(db gfsql.DB) error {
 		return errors.New("not specify user")
 	}
 
-	if user.TeamIID == 0 {
-		return errors.New("not specify TeamIID")
-	}
-
 	if user.IID != 0 {
-		return DeleteUserByIID(db, user.TeamIID, user.IID)
-	} else if user.ID != "" {
+		return DeleteUserByIID(db, user.IID)
+	} else if user.ID != "" && user.TeamIID > 0 {
 		return DeleteUserByID(db, user.TeamIID, user.ID)
 	}
 
