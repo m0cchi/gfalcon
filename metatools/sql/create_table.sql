@@ -92,6 +92,6 @@ CREATE TABLE `action_links`(
   `create_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY(`action_iid`, `user_iid`),
-  FOREIGN KEY(`action_iid`) REFERENCES `teams`(`iid`) ON DELETE CASCADE,
+  FOREIGN KEY(`action_iid`) REFERENCES `actions`(`iid`) ON DELETE CASCADE,
   FOREIGN KEY(`user_iid`) REFERENCES `users`(`iid`) ON DELETE CASCADE
 );
