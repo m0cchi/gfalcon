@@ -76,6 +76,10 @@ func (user *User) UpdatePassword(db gfsql.DB, password string) error {
 	var err error
 	var args interface{}
 
+	if user == nil {
+		return errors.New("not specify IID or ID")
+	}
+
 	if user.IID != 0 {
 		stmt, err = db.PrepareNamed(SQL_UPSERT_PASSWORD_BY_IID)
 		args = map[string]interface{}{"user_iid": user.IID, "password": toHash(password)}
@@ -117,7 +121,7 @@ func CreateUser(db gfsql.DB, teamIID uint32, userID string) (*User, error) {
 
 	if err != nil {
 		if mysqlErr, ok := err.(*mysql.MySQLError); ok {
-			if mysqlErr.Number == gfsql.ERR_CODE_DUPLICATE_ENTRY {
+			if mysqlErr.Number == gfsql.ErrCodeDuplicateEntry {
 				return nil, ErrDuplicate
 			}
 		}

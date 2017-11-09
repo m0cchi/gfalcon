@@ -47,7 +47,7 @@ func CreateService(db gfsql.DB, serviceID string) (*Service, error) {
 
 	if err != nil {
 		if mysqlErr, ok := err.(*mysql.MySQLError); ok {
-			if mysqlErr.Number == gfsql.ERR_CODE_DUPLICATE_ENTRY {
+			if mysqlErr.Number == gfsql.ErrCodeDuplicateEntry {
 				return nil, ErrDuplicate
 			}
 		}
