@@ -8,15 +8,15 @@ import (
 	"time"
 )
 
-const LENGTH_OF_SESSION = 44
+const LengthOfSession = 44
 
-const SQL_GET_SESSION_BY_USER = "SELECT `session`, `update_date`, `user_iid` FROM `sessions` WHERE `user_iid` = :user_iid"
+const SqlGetSessionByUser = "SELECT `session`, `update_date`, `user_iid` FROM `sessions` WHERE `user_iid` = :user_iid"
 
-const SQL_UPSERT_SESSIONS = "INSERT INTO `sessions` (`user_iid`,`session`) VALUES (:user_iid, :session) ON DUPLICATE KEY UPDATE `session` = :session"
+const SqlUpsertSessions = "INSERT INTO `sessions` (`user_iid`,`session`) VALUES (:user_iid, :session) ON DUPLICATE KEY UPDATE `session` = :session"
 
 func getSessionID(db gfsql.DB, user *model.User) (*model.Session, error) {
 	session := &model.Session{}
-	stmt, err := db.PrepareNamed(SQL_GET_SESSION_BY_USER)
+	stmt, err := db.PrepareNamed(SqlGetSessionByUser)
 	if err != nil {
 		return nil, err
 	}
@@ -27,7 +27,7 @@ func getSessionID(db gfsql.DB, user *model.User) (*model.Session, error) {
 }
 
 func updateSession(db gfsql.DB, user *model.User, sessionID string) error {
-	stmt, err := db.PrepareNamed(SQL_UPSERT_SESSIONS)
+	stmt, err := db.PrepareNamed(SqlUpsertSessions)
 	if err != nil {
 		return err
 	}
@@ -58,8 +58,8 @@ func AuthenticateWithPassword(db gfsql.DB, user *model.User, password string) (*
 	session, err := getSessionID(db, user)
 	if err != nil || session == nil || session.Validate() != nil {
 		// new session
-		session.SessionID = util.GenerateSessionID(LENGTH_OF_SESSION) // default size
-		session.UpdateDate = time.Now().UTC()                         // maybe unused...
+		session.SessionID = util.GenerateSessionID(LengthOfSession) // default size
+		session.UpdateDate = time.Now().UTC()                       // maybe unused...
 	}
 	err = updateSession(db, user, session.SessionID)
 	return session, err

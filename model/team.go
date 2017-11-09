@@ -6,11 +6,11 @@ import (
 	"github.com/m0cchi/gfalcon"
 )
 
-const SQL_GET_TEAM_BY_ID = "SELECT iid, id FROM `teams` WHERE `id` = :team_id"
-const SQL_CREATE_TEAM = "INSERT INTO `teams` (`id`) VALUE (:team_id)"
+const SqlGetTeamByID = "SELECT iid, id FROM `teams` WHERE `id` = :team_id"
+const SqlCreateTeam = "INSERT INTO `teams` (`id`) VALUE (:team_id)"
 
-const SQL_DELETE_TEAM_BY_IID = "DELETE FROM `teams` WHERE `iid` = :team_iid"
-const SQL_DELETE_TEAM_BY_ID = "DELETE FROM `teams` WHERE `id` = :team_id"
+const SqlDeleteTeamByIID = "DELETE FROM `teams` WHERE `iid` = :team_iid"
+const SqlDeleteTeamByID = "DELETE FROM `teams` WHERE `id` = :team_id"
 
 type Team struct {
 	IID uint32 `db:"iid"`
@@ -18,7 +18,7 @@ type Team struct {
 }
 
 func GetTeam(db gfsql.DB, teamID string) (*Team, error) {
-	stmt, err := db.PrepareNamed(SQL_GET_TEAM_BY_ID)
+	stmt, err := db.PrepareNamed(SqlGetTeamByID)
 
 	if err != nil {
 		return nil, err
@@ -31,7 +31,7 @@ func GetTeam(db gfsql.DB, teamID string) (*Team, error) {
 }
 
 func CreateTeam(db gfsql.DB, teamID string) (*Team, error) {
-	stmt, err := db.PrepareNamed(SQL_CREATE_TEAM)
+	stmt, err := db.PrepareNamed(SqlCreateTeam)
 
 	if err != nil {
 		return nil, err
@@ -61,7 +61,7 @@ func CreateTeam(db gfsql.DB, teamID string) (*Team, error) {
 }
 
 func DeleteTeamByIID(db gfsql.DB, teamIID uint32) error {
-	stmt, err := db.PrepareNamed(SQL_DELETE_TEAM_BY_IID)
+	stmt, err := db.PrepareNamed(SqlDeleteTeamByIID)
 	if err != nil {
 		return err
 	}
@@ -73,7 +73,7 @@ func DeleteTeamByIID(db gfsql.DB, teamIID uint32) error {
 }
 
 func DeleteTeamByID(db gfsql.DB, teamID string) error {
-	stmt, err := db.PrepareNamed(SQL_DELETE_TEAM_BY_ID)
+	stmt, err := db.PrepareNamed(SqlDeleteTeamByID)
 	if err != nil {
 		return err
 	}

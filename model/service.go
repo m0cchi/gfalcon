@@ -6,11 +6,11 @@ import (
 	"github.com/m0cchi/gfalcon"
 )
 
-const SQL_GET_SERVICE_BY_ID = "SELECT `iid`, `id` FROM `services` WHERE `id` = :service_id"
-const SQL_CREATE_SERVICE = "INSERT INTO `services` (`id`) VALUE (:service_id)"
+const SqlGetServiceByID = "SELECT `iid`, `id` FROM `services` WHERE `id` = :service_id"
+const SqlCreateService = "INSERT INTO `services` (`id`) VALUE (:service_id)"
 
-const SQL_DELETE_SERVICE_BY_IID = "DELETE FROM `services` WHERE `iid` = :service_iid"
-const SQL_DELETE_SERVICE_BY_ID = "DELETE FROM `services` WHERE `id` = :service_id"
+const SqlDeleteServiceByIID = "DELETE FROM `services` WHERE `iid` = :service_iid"
+const SqlDeleteServiceByID = "DELETE FROM `services` WHERE `id` = :service_id"
 
 type Service struct {
 	IID uint32 `db:"iid"`
@@ -18,7 +18,7 @@ type Service struct {
 }
 
 func GetService(db gfsql.DB, serviceID string) (*Service, error) {
-	stmt, err := db.PrepareNamed(SQL_GET_SERVICE_BY_ID)
+	stmt, err := db.PrepareNamed(SqlGetServiceByID)
 	if err != nil {
 		return nil, err
 	}
@@ -32,7 +32,7 @@ func GetService(db gfsql.DB, serviceID string) (*Service, error) {
 }
 
 func CreateService(db gfsql.DB, serviceID string) (*Service, error) {
-	stmt, err := db.PrepareNamed(SQL_CREATE_SERVICE)
+	stmt, err := db.PrepareNamed(SqlCreateService)
 
 	if err != nil {
 		return nil, err
@@ -62,7 +62,7 @@ func CreateService(db gfsql.DB, serviceID string) (*Service, error) {
 }
 
 func DeleteServiceByIID(db gfsql.DB, serviceIID uint32) error {
-	stmt, err := db.PrepareNamed(SQL_DELETE_SERVICE_BY_IID)
+	stmt, err := db.PrepareNamed(SqlDeleteServiceByIID)
 	if err != nil {
 		return err
 	}
@@ -74,7 +74,7 @@ func DeleteServiceByIID(db gfsql.DB, serviceIID uint32) error {
 }
 
 func DeleteServiceByID(db gfsql.DB, serviceID string) error {
-	stmt, err := db.PrepareNamed(SQL_DELETE_SERVICE_BY_ID)
+	stmt, err := db.PrepareNamed(SqlDeleteServiceByID)
 	if err != nil {
 		return err
 	}

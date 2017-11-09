@@ -5,17 +5,17 @@ import (
 	"github.com/m0cchi/gfalcon"
 )
 
-const SQL_GET_ACTION_LINK = "SELECT `action_iid`, `user_iid`, `count` FROM `action_links` WHERE `action_iid` = :action_iid and `user_iid` = :user_iid"
+const SqlGetActionLink = "SELECT `action_iid`, `user_iid`, `count` FROM `action_links` WHERE `action_iid` = :action_iid and `user_iid` = :user_iid"
 
 // support role
-const SQL_INCREMENT_ACTION_LINK_COUNT = "UPDATE `action_links` SET count = count + 1 WHERE `action_iid` = :action_iid and `user_iid` = :user_iid"
+const SqlIncrementActionLinkCount = "UPDATE `action_links` SET count = count + 1 WHERE `action_iid` = :action_iid and `user_iid` = :user_iid"
 
 // support role
-const SQL_DECREMENT_ACTION_LINK_COUNT = "UPDATE `action_links` SET count = count - 1 WHERE `action_iid` = :action_iid and `user_iid` = :user_iid"
+const SqlDecrementActionLinkCount = "UPDATE `action_links` SET count = count - 1 WHERE `action_iid` = :action_iid and `user_iid` = :user_iid"
 
-const SQL_CREATE_ACTION_LINK = "INSERT `action_links` (`action_iid`, `user_iid`) VALUE (:action_iid, :user_iid)"
+const SqlCreateActionLink = "INSERT `action_links` (`action_iid`, `user_iid`) VALUE (:action_iid, :user_iid)"
 
-const SQL_DELETE_ACTION_LINK = "DELETE FROM `action_links` WHERE `action_iid` = :action_iid and `user_iid` = :user_iid"
+const SqlDeleteActionLink = "DELETE FROM `action_links` WHERE `action_iid` = :action_iid and `user_iid` = :user_iid"
 
 type ActionLink struct {
 	ActionIID uint32 `db:"action_iid"`
@@ -26,7 +26,7 @@ type ActionLink struct {
 /*
 support role
 func incrementActionLinkCount(db gfsql.DB, actionIID uint32, userIID uint32) error {
-	stmt, err := db.PrepareNamed(SQL_INCREMENT_ACTION_LINK_COUNT)
+	stmt, err := db.PrepareNamed(SqlIncrementActionLinkCount)
 	if err != nil {
 		return err
 	}
@@ -38,7 +38,7 @@ func incrementActionLinkCount(db gfsql.DB, actionIID uint32, userIID uint32) err
 */
 
 func createActionLink(db gfsql.DB, actionIID uint32, userIID uint32) error {
-	stmt, err := db.PrepareNamed(SQL_CREATE_ACTION_LINK)
+	stmt, err := db.PrepareNamed(SqlCreateActionLink)
 	if err != nil {
 		return err
 	}
@@ -60,7 +60,7 @@ func CreateActionLink(db gfsql.DB, action *Action, user *User) error {
 }
 
 func getActionLink(db gfsql.DB, actionIID uint32, userIID uint32) (*ActionLink, error) {
-	stmt, err := db.PrepareNamed(SQL_GET_ACTION_LINK)
+	stmt, err := db.PrepareNamed(SqlGetActionLink)
 	if err != nil {
 		return nil, err
 	}
@@ -82,7 +82,7 @@ func GetActionLink(db gfsql.DB, action *Action, user *User) (*ActionLink, error)
 }
 
 func decrementActionLinkCount(db gfsql.DB, actionIID uint32, userIID uint32) error {
-	stmt, err := db.PrepareNamed(SQL_DECREMENT_ACTION_LINK_COUNT)
+	stmt, err := db.PrepareNamed(SqlDecrementActionLinkCount)
 	if err != nil {
 		return err
 	}
@@ -93,7 +93,7 @@ func decrementActionLinkCount(db gfsql.DB, actionIID uint32, userIID uint32) err
 }
 
 func deleteActionLinkByIID(db gfsql.DB, actionIID uint32, userIID uint32) error {
-	stmt, err := db.PrepareNamed(SQL_DELETE_ACTION_LINK)
+	stmt, err := db.PrepareNamed(SqlDeleteActionLink)
 	if err != nil {
 		return err
 	}

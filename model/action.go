@@ -6,12 +6,12 @@ import (
 	"github.com/m0cchi/gfalcon"
 )
 
-const SQL_GET_ACTION_BY_ID = "SELECT `iid`, `service_iid`, `id` FROM `actions` WHERE `id` = :action_id and `service_iid` = :service_iid"
+const SqlGetActionByID = "SELECT `iid`, `service_iid`, `id` FROM `actions` WHERE `id` = :action_id and `service_iid` = :service_iid"
 
-const SQL_CREATE_ACTION = "INSERT INTO `actions` (`service_iid`, `id`) VALUE (:service_iid, :action_id)"
+const SqlCreateAction = "INSERT INTO `actions` (`service_iid`, `id`) VALUE (:service_iid, :action_id)"
 
-const SQL_DELETE_ACTION_BY_IID = "DELETE FROM `actions` WHERE `iid` = :action_iid and `service_iid` = :service_iid"
-const SQL_DELETE_ACTION_BY_ID = "DELETE FROM `actions` WHERE `id` = :action_id and `service_iid` = :service_iid"
+const SqlDeleteActionByIID = "DELETE FROM `actions` WHERE `iid` = :action_iid and `service_iid` = :service_iid"
+const SqlDeleteActionByID = "DELETE FROM `actions` WHERE `id` = :action_id and `service_iid` = :service_iid"
 
 type Action struct {
 	IID        uint32 `db:"iid"`
@@ -20,7 +20,7 @@ type Action struct {
 }
 
 func CreateAction(db gfsql.DB, serviceIID uint32, actionID string) (*Action, error) {
-	stmt, err := db.PrepareNamed(SQL_CREATE_ACTION)
+	stmt, err := db.PrepareNamed(SqlCreateAction)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +46,7 @@ func CreateAction(db gfsql.DB, serviceIID uint32, actionID string) (*Action, err
 }
 
 func GetAction(db gfsql.DB, serviceIID uint32, actionID string) (*Action, error) {
-	stmt, err := db.PrepareNamed(SQL_GET_ACTION_BY_ID)
+	stmt, err := db.PrepareNamed(SqlGetActionByID)
 
 	if err != nil {
 		return nil, err
@@ -59,7 +59,7 @@ func GetAction(db gfsql.DB, serviceIID uint32, actionID string) (*Action, error)
 }
 
 func DeleteActionByIID(db gfsql.DB, serviceIID uint32, actionIID uint32) error {
-	stmt, err := db.PrepareNamed(SQL_DELETE_ACTION_BY_IID)
+	stmt, err := db.PrepareNamed(SqlDeleteActionByIID)
 	if err != nil {
 		return err
 	}
@@ -71,7 +71,7 @@ func DeleteActionByIID(db gfsql.DB, serviceIID uint32, actionIID uint32) error {
 }
 
 func DeleteActionByID(db gfsql.DB, serviceIID uint32, actionID string) error {
-	stmt, err := db.PrepareNamed(SQL_DELETE_ACTION_BY_ID)
+	stmt, err := db.PrepareNamed(SqlDeleteActionByID)
 	if err != nil {
 		return err
 	}

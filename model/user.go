@@ -8,19 +8,19 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-const SQL_GET_USER_BY_ID = "SELECT `iid`, `team_iid`, `id` FROM `users` WHERE `team_iid` = :team_iid and `id` = :user_id"
-const SQL_UPSERT_PASSWORD_INSERT_BASE = "INSERT INTO `passwords` (`user_iid`,`password`) SELECT `users`.`iid`, :password as password FROM `users` WHERE "
-const SQL_UPSERT_PASSWORD_UPDATE_BASE = "ON DUPLICATE KEY UPDATE `passwords`.`password` = :password"
-const SQL_UPSERT_PASSWORD_BY_IID = SQL_UPSERT_PASSWORD_INSERT_BASE + "`users`.`iid` = :user_iid " + SQL_UPSERT_PASSWORD_UPDATE_BASE
-const SQL_UPSERT_PASSWORD_BY_ID = SQL_UPSERT_PASSWORD_INSERT_BASE + "`users`.`team_iid` = :team_iid and `users`.`id` = :user_id " + SQL_UPSERT_PASSWORD_UPDATE_BASE
+const SqlGetUserByID = "SELECT `iid`, `team_iid`, `id` FROM `users` WHERE `team_iid` = :team_iid and `id` = :user_id"
+const SqlUpsertPasswordInsertBase = "INSERT INTO `passwords` (`user_iid`,`password`) SELECT `users`.`iid`, :password as password FROM `users` WHERE "
+const SqlUpsertPasswordUpdateBase = "ON DUPLICATE KEY UPDATE `passwords`.`password` = :password"
+const SqlUpsertPasswordByIID = SqlUpsertPasswordInsertBase + "`users`.`iid` = :user_iid " + SqlUpsertPasswordUpdateBase
+const SqlUpsertPasswordByID = SqlUpsertPasswordInsertBase + "`users`.`team_iid` = :team_iid and `users`.`id` = :user_id " + SqlUpsertPasswordUpdateBase
 
-const SQL_GET_PASSWORD_BY_IID = "SELECT `password` FROM `passwords` WHERE `user_iid` = :user_iid"
-const SQL_GET_PASSWORD_BY_ID = "SELECT `password` FROM `passwords`, (SELECT `user_iid` FROM `users` WHERE `team_iid` = :team_iid and `id` = :user_id) as `filtered` WHERE `passwords`.`user_iid` = `filtered`.`user_iid`"
+const SqlGetPasswordByIID = "SELECT `password` FROM `passwords` WHERE `user_iid` = :user_iid"
+const SqlGetPasswordByID = "SELECT `password` FROM `passwords`, (SELECT `user_iid` FROM `users` WHERE `team_iid` = :team_iid and `id` = :user_id) as `filtered` WHERE `passwords`.`user_iid` = `filtered`.`user_iid`"
 
-const SQL_CREATE_USER = "INSERT INTO `users` (`team_iid`,`id`) VALUE (:team_iid, :user_id)"
+const SqlCreateUser = "INSERT INTO `users` (`team_iid`,`id`) VALUE (:team_iid, :user_id)"
 
-const SQL_DELETE_USER_BY_IID = "DELETE FROM `users` WHERE `iid` = :user_iid"
-const SQL_DELETE_USER_BY_ID = "DELETE FROM `users` WHERE `team_iid` = :team_iid and `id` = :user_id"
+const SqlDeleteUserByIID = "DELETE FROM `users` WHERE `iid` = :user_iid"
+const SqlDeleteUserByID = "DELETE FROM `users` WHERE `team_iid` = :team_iid and `id` = :user_id"
 
 type User struct {
 	IID     uint32 `db:"iid"`
@@ -43,10 +43,10 @@ func (user *User) MatchPassword(db gfsql.DB, password string) error {
 	var args interface{}
 
 	if user.IID != 0 {
-		stmt, err = db.PrepareNamed(SQL_GET_PASSWORD_BY_IID)
+		stmt, err = db.PrepareNamed(SqlGetPasswordByIID)
 		args = map[string]interface{}{"user_iid": user.IID}
 	} else if user.ID != "" && user.TeamIID > 0 {
-		stmt, err = db.PrepareNamed(SQL_GET_PASSWORD_BY_ID)
+		stmt, err = db.PrepareNamed(SqlGetPasswordByID)
 		args = map[string]interface{}{"team_iid": user.TeamIID, "user_id": user.ID}
 	} else {
 		return errors.New("not specify IID or ID")
@@ -81,10 +81,10 @@ func (user *User) UpdatePassword(db gfsql.DB, password string) error {
 	}
 
 	if user.IID != 0 {
-		stmt, err = db.PrepareNamed(SQL_UPSERT_PASSWORD_BY_IID)
+		stmt, err = db.PrepareNamed(SqlUpsertPasswordByIID)
 		args = map[string]interface{}{"user_iid": user.IID, "password": toHash(password)}
 	} else if user.ID != "" && user.TeamIID > 0 {
-		stmt, err = db.PrepareNamed(SQL_UPSERT_PASSWORD_BY_ID)
+		stmt, err = db.PrepareNamed(SqlUpsertPasswordByID)
 		args = map[string]interface{}{"team_iid": user.TeamIID, "user_id": user.ID, "password": toHash(password)}
 	} else {
 		return errors.New("not specify IID or ID")
@@ -98,7 +98,7 @@ func (user *User) UpdatePassword(db gfsql.DB, password string) error {
 }
 
 func GetUser(db gfsql.DB, teamIID uint32, userID string) (*User, error) {
-	stmt, err := db.PrepareNamed(SQL_GET_USER_BY_ID)
+	stmt, err := db.PrepareNamed(SqlGetUserByID)
 
 	if err != nil {
 		return nil, err
@@ -110,7 +110,7 @@ func GetUser(db gfsql.DB, teamIID uint32, userID string) (*User, error) {
 }
 
 func CreateUser(db gfsql.DB, teamIID uint32, userID string) (*User, error) {
-	stmt, err := db.PrepareNamed(SQL_CREATE_USER)
+	stmt, err := db.PrepareNamed(SqlCreateUser)
 	if err != nil {
 		return nil, err
 	}
@@ -136,7 +136,7 @@ func CreateUser(db gfsql.DB, teamIID uint32, userID string) (*User, error) {
 }
 
 func DeleteUserByIID(db gfsql.DB, userIID uint32) error {
-	stmt, err := db.PrepareNamed(SQL_DELETE_USER_BY_IID)
+	stmt, err := db.PrepareNamed(SqlDeleteUserByIID)
 	if err != nil {
 		return err
 	}
@@ -148,7 +148,7 @@ func DeleteUserByIID(db gfsql.DB, userIID uint32) error {
 }
 
 func DeleteUserByID(db gfsql.DB, teamIID uint32, userID string) error {
-	stmt, err := db.PrepareNamed(SQL_DELETE_USER_BY_ID)
+	stmt, err := db.PrepareNamed(SqlDeleteUserByID)
 	if err != nil {
 		return err
 	}

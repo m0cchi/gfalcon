@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-const SQL_GET_SESSION = "SELECT `session`, `update_date`, `user_iid` FROM `sessions` WHERE `session` = :session_id"
+const SqlGetSession = "SELECT `session`, `update_date`, `user_iid` FROM `sessions` WHERE `session` = :session_id"
 
 type Session struct {
 	SessionID  string    `db:"session"`
@@ -15,7 +15,7 @@ type Session struct {
 
 func GetSession(db gfsql.DB, sessionID string) (*Session, error) {
 	session := &Session{}
-	stmt, err := db.PrepareNamed(SQL_GET_SESSION)
+	stmt, err := db.PrepareNamed(SqlGetSession)
 	if err != nil {
 		return nil, err
 	}
