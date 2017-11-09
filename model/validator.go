@@ -6,7 +6,7 @@ import (
 )
 
 // 7 days
-const EXPIRATION_INTERVAL = 7 * 24 * -1
+const ExpirationInterval = 7 * 24 * -1
 
 func (session *Session) Validate() error {
 	if session == nil {
@@ -18,7 +18,7 @@ func (session *Session) Validate() error {
 	}
 
 	sub := time.Since(session.UpdateDate)
-	if sub.Hours() <= EXPIRATION_INTERVAL {
+	if sub.Hours() <= ExpirationInterval {
 		return errors.New("session has expired")
 	}
 	return nil
