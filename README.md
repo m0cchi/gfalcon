@@ -1,5 +1,7 @@
 # identification infrastructure for SaaS Platform
 [![CircleCI](https://circleci.com/gh/m0cchi/gfalcon.svg?style=svg)](https://circleci.com/gh/m0cchi/gfalcon)
+[![BCH compliance](https://bettercodehub.com/edge/badge/m0cchi/gfalcon?branch=master)](https://bettercodehub.com/)
+[![codebeat badge](https://codebeat.co/badges/c50993b8-1cbc-4e6a-ad94-43c31c30d020)](https://codebeat.co/projects/github-com-m0cchi-gfalcon-master)
 
 # TODO
 - Role の作成
