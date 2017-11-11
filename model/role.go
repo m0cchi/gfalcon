@@ -1,6 +1,7 @@
 package model
 
 import (
+	"errors"
 	"github.com/go-sql-driver/mysql"
 	"github.com/m0cchi/gfalcon"
 )
@@ -9,6 +10,8 @@ const SqlGetRoleByID = "SELECT `iid`, `team_iid`, `id` FROM `roles` WHERE `team_
 
 const SqlCreateRole = "INSERT INTO `roles` (`team_iid`,`id`) VALUE (:team_iid, :role_id)"
 
+const SqlDeleteRoleByIID = "DELETE FROM `roles` WHERE `iid` = :role_iid"
+const SqlDeleteRoleByID = "DELETE FROM `roles` WHERE `team_iid` = :team_iid and `id` = :role_id"
 
 type Role struct {
 	IID     uint32 `db:"iid"`
@@ -52,4 +55,42 @@ func CreateRole(db gfsql.DB, teamIID uint32, roleID string) (*Role, error) {
 	}
 
 	return role, err
+}
+
+func DeleteRoleByIID(db gfsql.DB, roleIID uint32) error {
+	stmt, err := db.PrepareNamed(SqlDeleteRoleByIID)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+	args := map[string]interface{}{"role_iid": roleIID}
+	_, err = stmt.Exec(args)
+
+	return err
+}
+
+func DeleteRoleByID(db gfsql.DB, teamIID uint32, roleID string) error {
+	stmt, err := db.PrepareNamed(SqlDeleteRoleByID)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+	args := map[string]interface{}{"team_iid": teamIID, "role_id": roleID}
+	_, err = stmt.Exec(args)
+
+	return err
+}
+
+func (role *Role) Delete(db gfsql.DB) error {
+	if role == nil {
+		return errors.New("not specify role")
+	}
+
+	if role.IID != 0 {
+		return DeleteRoleByIID(db, role.IID)
+	} else if role.ID != "" && role.TeamIID > 0 {
+		return DeleteRoleByID(db, role.TeamIID, role.ID)
+	}
+
+	return errors.New("not specify role")
 }
