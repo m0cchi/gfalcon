@@ -1,10 +1,14 @@
 package model
 
 import (
+	"github.com/go-sql-driver/mysql"
 	"github.com/m0cchi/gfalcon"
 )
 
 const SqlGetRoleByID = "SELECT `iid`, `team_iid`, `id` FROM `roles` WHERE `team_iid` = :team_iid and `id` = :role_id"
+
+const SqlCreateRole = "INSERT INTO `roles` (`team_iid`,`id`) VALUE (:team_iid, :role_id)"
+
 
 type Role struct {
 	IID     uint32 `db:"iid"`
@@ -21,5 +25,31 @@ func GetRole(db gfsql.DB, teamIID uint32, roleID string) (*Role, error) {
 	defer stmt.Close()
 	role := &Role{}
 	err = stmt.Get(role, map[string]interface{}{"team_iid": teamIID, "role_id": roleID})
+	return role, err
+}
+
+func CreateRole(db gfsql.DB, teamIID uint32, roleID string) (*Role, error) {
+	stmt, err := db.PrepareNamed(SqlCreateRole)
+	if err != nil {
+		return nil, err
+	}
+	defer stmt.Close()
+	args := map[string]interface{}{"team_iid": teamIID, "role_id": roleID}
+	result, err := stmt.Exec(args)
+	role := &Role{IID: 0, TeamIID: teamIID, ID: roleID}
+
+	if err != nil {
+		if mysqlErr, ok := err.(*mysql.MySQLError); ok {
+			if mysqlErr.Number == gfsql.ErrCodeDuplicateEntry {
+				return nil, ErrDuplicate
+			}
+		}
+		return nil, err
+	}
+
+	if c, err := result.LastInsertId(); err == nil {
+		role.IID = uint32(c)
+	}
+
 	return role, err
 }
