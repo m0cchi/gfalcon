@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func setup(t *testing.T) {
+func setupActionLinkTest(t *testing.T) {
 	// init test data
 	var serviceIID uint32 = 1
 	actionID := "keyaki"
@@ -34,7 +34,7 @@ func setup(t *testing.T) {
 
 }
 
-func teardown() {
+func teardownActionLinkTest() {
 	actionID := "keyaki"
 	var serviceIID uint32 = 1
 	model.DeleteActionByID(helper.DB, serviceIID, actionID)
@@ -43,7 +43,7 @@ func teardown() {
 }
 
 func TestCreateActionList(t *testing.T) {
-	setup(t)
+	setupActionLinkTest(t)
 	var serviceIID uint32 = 1
 	actionID := "keyaki"
 	action, err := model.GetAction(helper.DB, serviceIID, actionID)
@@ -107,5 +107,5 @@ func TestDeleteActionList(t *testing.T) {
 	if err != nil {
 		t.Fatalf("has err: %v", err)
 	}
-	teardown()
+	teardownActionLinkTest()
 }
