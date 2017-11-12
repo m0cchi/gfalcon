@@ -91,6 +91,32 @@ func TestGetActionList(t *testing.T) {
 	}
 }
 
+func TestUpsertActionList(t *testing.T) {
+	var serviceIID uint32 = 1
+	actionID := "keyaki"
+	action, err := model.GetAction(helper.DB, serviceIID, actionID)
+	if err != nil {
+		t.Fatalf("test data error: missing action")
+	}
+
+	teamID := "keyaki"
+	userID := "keyaki"
+	user, err := GetUser(helper.DB, teamID, userID)
+
+	err = model.UpsertActionLink(helper.DB, action, user)
+	if err != nil {
+		t.Fatalf("has err: %v", err)
+	}
+
+	actionLink, err := model.GetActionLink(helper.DB, action, user)
+	if err != nil {
+		t.Fatalf("has err: %v", err)
+	}
+	if actionLink.Count != 2 {
+		t.Fatalf("expected count == 2 but %v", actionLink.Count)
+	}
+}
+
 func TestDeleteActionList(t *testing.T) {
 	var serviceIID uint32 = 1
 	actionID := "keyaki"

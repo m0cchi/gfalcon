@@ -8,10 +8,9 @@ import (
 const SqlGetActionLink = "SELECT `action_iid`, `user_iid`, `count` FROM `action_links` WHERE `action_iid` = :action_iid and `user_iid` = :user_iid"
 
 // support role
-const SqlIncrementActionLinkCount = "UPDATE `action_links` SET count = count + 1 WHERE `action_iid` = :action_iid and `user_iid` = :user_iid"
-
-// support role
 const SqlDecrementActionLinkCount = "UPDATE `action_links` SET count = count - 1 WHERE `action_iid` = :action_iid and `user_iid` = :user_iid"
+
+const SqlUpsertActionLink = "INSERT INTO `action_links` (`action_iid`, `user_iid`) VALUE (:action_iid, :user_iid) ON DUPLICATE KEY UPDATE count = count + 1"
 
 const SqlCreateActionLink = "INSERT `action_links` (`action_iid`, `user_iid`) VALUE (:action_iid, :user_iid)"
 
@@ -23,19 +22,27 @@ type ActionLink struct {
 	Count     uint32 `db:"count"`
 }
 
-/*
-support role
-func incrementActionLinkCount(db gfsql.DB, actionIID uint32, userIID uint32) error {
-	stmt, err := db.PrepareNamed(SqlIncrementActionLinkCount)
+func upsertActionLink(db gfsql.DB, actionIID uint32, userIID uint32) error {
+	stmt, err := db.PrepareNamed(SqlUpsertActionLink)
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 	args := map[string]interface{}{"action_iid": actionIID, "user_iid": userIID}
 	_, err = stmt.Exec(args)
+
 	return err
 }
-*/
+
+func UpsertActionLink(db gfsql.DB, action *Action, user *User) error {
+	if action == nil || action.IID == 0 {
+		return errors.New("not specify actionIID")
+	}
+	if user == nil || user.IID == 0 {
+		return errors.New("not specify userIID")
+	}
+	return upsertActionLink(db, action.IID, user.IID)
+}
 
 func createActionLink(db gfsql.DB, actionIID uint32, userIID uint32) error {
 	stmt, err := db.PrepareNamed(SqlCreateActionLink)
