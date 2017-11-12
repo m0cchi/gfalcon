@@ -88,7 +88,16 @@ func decrementActionLinkCount(db gfsql.DB, actionIID uint32, userIID uint32) err
 	}
 	defer stmt.Close()
 	args := map[string]interface{}{"action_iid": actionIID, "user_iid": userIID}
-	_, err = stmt.Exec(args)
+	result, err := stmt.Exec(args)
+	if err != nil {
+		return err
+	}
+
+	c, err := result.RowsAffected()
+	if c != 1 {
+		return errors.New("failed to delete")
+	}
+
 	return err
 }
 
@@ -99,7 +108,16 @@ func deleteActionLinkByIID(db gfsql.DB, actionIID uint32, userIID uint32) error 
 	}
 	defer stmt.Close()
 	args := map[string]interface{}{"action_iid": actionIID, "user_iid": userIID}
-	_, err = stmt.Exec(args)
+	result, err := stmt.Exec(args)
+	if err != nil {
+		return err
+	}
+
+	c, err := result.RowsAffected()
+	if c != 1 {
+		return errors.New("failed to delete")
+	}
+
 	return err
 }
 

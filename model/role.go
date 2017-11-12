@@ -64,7 +64,15 @@ func DeleteRoleByIID(db gfsql.DB, roleIID uint32) error {
 	}
 	defer stmt.Close()
 	args := map[string]interface{}{"role_iid": roleIID}
-	_, err = stmt.Exec(args)
+	result, err := stmt.Exec(args)
+	if err != nil {
+		return err
+	}
+
+	c, err := result.RowsAffected()
+	if c != 1 {
+		return errors.New("failed to delete")
+	}
 
 	return err
 }
@@ -76,7 +84,15 @@ func DeleteRoleByID(db gfsql.DB, teamIID uint32, roleID string) error {
 	}
 	defer stmt.Close()
 	args := map[string]interface{}{"team_iid": teamIID, "role_id": roleID}
-	_, err = stmt.Exec(args)
+	result, err := stmt.Exec(args)
+	if err != nil {
+		return err
+	}
+
+	c, err := result.RowsAffected()
+	if c != 1 {
+		return errors.New("failed to delete")
+	}
 
 	return err
 }

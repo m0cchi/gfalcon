@@ -66,7 +66,16 @@ func DeleteActionByIID(db gfsql.DB, serviceIID uint32, actionIID uint32) error {
 	defer stmt.Close()
 
 	args := map[string]interface{}{"service_iid": serviceIID, "action_iid": actionIID}
-	_, err = stmt.Exec(args)
+	result, err := stmt.Exec(args)
+	if err != nil {
+		return err
+	}
+
+	c, err := result.RowsAffected()
+	if c != 1 {
+		return errors.New("failed to delete")
+	}
+
 	return err
 }
 
@@ -78,7 +87,16 @@ func DeleteActionByID(db gfsql.DB, serviceIID uint32, actionID string) error {
 	defer stmt.Close()
 
 	args := map[string]interface{}{"service_iid": serviceIID, "action_id": actionID}
-	_, err = stmt.Exec(args)
+	result, err := stmt.Exec(args)
+	if err != nil {
+		return err
+	}
+
+	c, err := result.RowsAffected()
+	if c != 1 {
+		return errors.New("failed to delete")
+	}
+
 	return err
 }
 

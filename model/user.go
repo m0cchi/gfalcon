@@ -142,7 +142,15 @@ func DeleteUserByIID(db gfsql.DB, userIID uint32) error {
 	}
 	defer stmt.Close()
 	args := map[string]interface{}{"user_iid": userIID}
-	_, err = stmt.Exec(args)
+	result, err := stmt.Exec(args)
+	if err != nil {
+		return err
+	}
+
+	c, err := result.RowsAffected()
+	if c != 1 {
+		return errors.New("failed to delete")
+	}
 
 	return err
 }
@@ -154,7 +162,15 @@ func DeleteUserByID(db gfsql.DB, teamIID uint32, userID string) error {
 	}
 	defer stmt.Close()
 	args := map[string]interface{}{"team_iid": teamIID, "user_id": userID}
-	_, err = stmt.Exec(args)
+	result, err := stmt.Exec(args)
+	if err != nil {
+		return err
+	}
+
+	c, err := result.RowsAffected()
+	if c != 1 {
+		return errors.New("failed to delete")
+	}
 
 	return err
 }

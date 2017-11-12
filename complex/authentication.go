@@ -33,7 +33,15 @@ func updateSession(db gfsql.DB, user *model.User, sessionID string) error {
 	}
 	defer stmt.Close()
 	args := map[string]interface{}{"user_iid": user.IID, "session": sessionID}
-	_, err = stmt.Exec(args)
+	result, err := stmt.Exec(args)
+	if err != nil {
+		return err
+	}
+
+	c, err := result.RowsAffected()
+	if c != 1 {
+		return errors.New("failed to delete")
+	}
 
 	return err
 }
