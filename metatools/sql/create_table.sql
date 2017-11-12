@@ -1,4 +1,5 @@
 -- DROP TABLE IF EXISTS ``;
+DROP TABLE IF EXISTS `role_actions`;
 DROP TABLE IF EXISTS `role_links`;
 DROP TABLE IF EXISTS `action_links`;
 DROP TABLE IF EXISTS `sessions`;
@@ -104,4 +105,13 @@ CREATE TABLE `role_links`(
   PRIMARY KEY(`role_iid`, `user_iid`),
   FOREIGN KEY(`role_iid`) REFERENCES `roles`(`iid`) ON DELETE CASCADE,
   FOREIGN KEY(`user_iid`) REFERENCES `users`(`iid`) ON DELETE CASCADE
+);
+
+CREATE TABLE `role_actions`(
+  `role_iid` INT UNSIGNED NOT NULL,
+  `action_iid` INT UNSIGNED NOT NULL,
+  `create_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY(`role_iid`, `action_iid`),
+  FOREIGN KEY(`role_iid`) REFERENCES `roles`(`iid`) ON DELETE CASCADE,
+  FOREIGN KEY(`action_iid`) REFERENCES `actions`(`iid`) ON DELETE CASCADE
 );
