@@ -50,8 +50,8 @@ func updateSession(db gfsql.DB, user *model.User, sessionID string) error {
 	return err
 }
 
-func createNewSession(db gfsql.DB) (*model.Session, error) {
-	session := &model.Session{}
+func createNewSession(db gfsql.DB, user *model.User) (*model.Session, error) {
+	session := &model.Session{UserIID: user.IID}
 	i := 0
 	for ; i < MaxChallenge; i++ {
 		session.SessionID = util.GenerateSessionID(LengthOfSession) // default size
@@ -92,7 +92,7 @@ func AuthenticateWithPassword(db gfsql.DB, user *model.User, password string) (*
 
 	session, err := getSessionID(db, user)
 	if err != nil || session == nil || session.Validate() != nil {
-		session, err = createNewSession(db)
+		session, err = createNewSession(db, user)
 		if err != nil {
 			return nil, err
 		}
