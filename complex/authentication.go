@@ -50,6 +50,29 @@ func updateSession(db gfsql.DB, user *model.User, sessionID string) error {
 	return err
 }
 
+func createNewSession(db gfsql.DB) (*model.Session, error) {
+	session := &model.Session{}
+	i := 0
+	for ; i < MaxChallenge; i++ {
+		session.SessionID = util.GenerateSessionID(LengthOfSession) // default size
+		s, err := model.GetSession(db, session.SessionID)
+		if err == sql.ErrNoRows {
+			break
+		} else if err == nil && s.Validate() != nil {
+			err = s.Delete(db)
+			if err == nil {
+				break
+			}
+		}
+	}
+	if i == MaxChallenge {
+		return nil, errors.New("Oh crap, session id was exhausted")
+	}
+
+	session.UpdateDate = time.Now().UTC() // maybe unused...
+	return session, nil
+}
+
 func AuthenticateWithPassword(db gfsql.DB, user *model.User, password string) (*model.Session, error) {
 	err := user.MatchPassword(db, password)
 	if err != nil {
@@ -69,25 +92,10 @@ func AuthenticateWithPassword(db gfsql.DB, user *model.User, password string) (*
 
 	session, err := getSessionID(db, user)
 	if err != nil || session == nil || session.Validate() != nil {
-		// new session
-		i := 0
-		for ; i < MaxChallenge; i++ {
-			session.SessionID = util.GenerateSessionID(LengthOfSession) // default size
-			s, err := model.GetSession(db, session.SessionID)
-			if err == sql.ErrNoRows {
-				break
-			} else if err == nil && s.Validate() != nil {
-				err = s.Delete(db)
-				if err == nil {
-					break
-				}
-			}
+		session, err = createNewSession(db)
+		if err != nil {
+			return nil, err
 		}
-		if i == MaxChallenge {
-			return nil, errors.New("Oh crap, session id was exhausted")
-		}
-
-		session.UpdateDate = time.Now().UTC() // maybe unused...
 	}
 	err = updateSession(db, user, session.SessionID)
 	return session, err
