@@ -12,6 +12,8 @@
 - SampleApp(Wiki,ImageStorage)
 - CLI経由でモデル操作
 - ModelInfoの実装(UserやServiceを任意に拡張できる)
+- 無効なSessionの削除
+- 設定ファイル(セッションの長さや有効期限の設定)
 
 # Sample IdP
 ## https://github.com/m0cchi/gfalcon-signin-service
