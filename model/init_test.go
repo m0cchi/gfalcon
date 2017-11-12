@@ -38,3 +38,11 @@ func GetUser(db *sqlx.DB, teamID string, userID string) (*model.User, error) {
 	}
 	return model.GetUser(db, team.IID, userID)
 }
+
+func GetRole(db *sqlx.DB, teamID string, roleID string) (*model.Role, error) {
+	team, err := model.GetTeam(db, teamID)
+	if err != nil {
+		return nil, err
+	}
+	return model.GetRole(db, team.IID, roleID)
+}
