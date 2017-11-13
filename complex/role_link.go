@@ -43,3 +43,41 @@ func CreateRoleLink(db sqlx.DB, role *model.Role, user *model.User) (error error
 	}()
 	return createRoleLink(tx, role, user)
 }
+
+func deleteRoleLink(tx *sqlx.Tx, role *model.Role, user *model.User) error {
+	err := model.DeleteRoleLink(tx, role, user)
+	if err != nil {
+		return err
+	}
+
+	roleActions, err := model.GetRoleActions(tx, role)
+	if err != nil {
+		return err
+	}
+	for _, roleAction := range roleActions {
+		action := &model.Action{IID: roleAction.ActionIID}
+		err := model.DeleteActionLink(tx, action, user)
+		if err != nil {
+			return err
+		}
+	}
+	return err
+}
+
+func DeleteRoleLink(db sqlx.DB, role *model.Role, user *model.User) (error error) {
+	tx, err := db.Beginx()
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if err := recover(); err != nil {
+			error = errors.New("failed delete role link")
+			tx.Rollback()
+		} else if error != nil {
+			tx.Rollback()
+		} else {
+			error = tx.Commit()
+		}
+	}()
+	return deleteRoleLink(tx, role, user)
+}
