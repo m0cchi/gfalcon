@@ -7,10 +7,10 @@ import (
 
 func setupRoleLinkTest(t *testing.T) {
 	// init test data
-	var serviceIID uint32 = 1
+	var teamIID uint32 = 1
 	roleID := "keyaki"
 
-	_, err := model.CreateRole(helper.DB, serviceIID, roleID)
+	_, err := model.CreateRole(helper.DB, teamIID, roleID)
 	if err != nil && err != model.ErrDuplicate {
 		t.Fatalf("failed create role")
 	}
@@ -36,17 +36,17 @@ func setupRoleLinkTest(t *testing.T) {
 
 func teardownRoleLinkTest() {
 	roleID := "keyaki"
-	var serviceIID uint32 = 1
-	model.DeleteRoleByID(helper.DB, serviceIID, roleID)
+	var teamIID uint32 = 1
+	model.DeleteRoleByID(helper.DB, teamIID, roleID)
 	teamID := "keyaki"
 	model.DeleteTeamByID(helper.DB, teamID)
 }
 
 func TestCreateRoleList(t *testing.T) {
 	setupRoleLinkTest(t)
-	var serviceIID uint32 = 1
+	var teamIID uint32 = 1
 	roleID := "keyaki"
-	role, err := model.GetRole(helper.DB, serviceIID, roleID)
+	role, err := model.GetRole(helper.DB, teamIID, roleID)
 	if err != nil {
 		t.Fatalf("test data error: missing role")
 	}
@@ -62,9 +62,9 @@ func TestCreateRoleList(t *testing.T) {
 }
 
 func TestDeleteRoleList(t *testing.T) {
-	var serviceIID uint32 = 1
+	var teamIID uint32 = 1
 	roleID := "keyaki"
-	role, err := model.GetRole(helper.DB, serviceIID, roleID)
+	role, err := model.GetRole(helper.DB, teamIID, roleID)
 	if err != nil {
 		t.Fatalf("test data error: missing role")
 	}
