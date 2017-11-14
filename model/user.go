@@ -42,7 +42,7 @@ func (user *User) MatchPassword(db gfsql.DB, password string) error {
 	var err error
 	var args interface{}
 
-	if user.IID != 0 {
+	if user.IID > 0 {
 		stmt, err = db.PrepareNamed(SqlGetPasswordByIID)
 		args = map[string]interface{}{"user_iid": user.IID}
 	} else if user.ID != "" && user.TeamIID > 0 {
@@ -80,7 +80,7 @@ func (user *User) UpdatePassword(db gfsql.DB, password string) error {
 		return errors.New("not specify IID or ID")
 	}
 
-	if user.IID != 0 {
+	if user.IID > 0 {
 		stmt, err = db.PrepareNamed(SqlUpsertPasswordByIID)
 		args = map[string]interface{}{"user_iid": user.IID, "password": toHash(password)}
 	} else if user.ID != "" && user.TeamIID > 0 {
@@ -180,7 +180,7 @@ func (user *User) Delete(db gfsql.DB) error {
 		return errors.New("not specify user")
 	}
 
-	if user.IID != 0 {
+	if user.IID > 0 {
 		return DeleteUserByIID(db, user.IID)
 	} else if user.ID != "" && user.TeamIID > 0 {
 		return DeleteUserByID(db, user.TeamIID, user.ID)
