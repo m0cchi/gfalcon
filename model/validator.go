@@ -5,8 +5,8 @@ import (
 	"time"
 )
 
-// 7 days
-const ExpirationInterval = 7 * 24 * -1
+// 1 day
+const ExpirationInterval = 1 * 24 * -1
 
 func (session *Session) Validate() error {
 	if session == nil {
