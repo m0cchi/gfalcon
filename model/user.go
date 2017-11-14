@@ -93,7 +93,16 @@ func (user *User) UpdatePassword(db gfsql.DB, password string) error {
 		return err
 	}
 	defer stmt.Close()
-	_, err = stmt.Exec(args)
+	result, err := stmt.Exec(args)
+	if err != nil {
+		return err
+	}
+
+	c, err := result.RowsAffected()
+	if c != 1 && c != 2 {
+		return errors.New("failed to update password")
+	}
+
 	return err
 }
 
