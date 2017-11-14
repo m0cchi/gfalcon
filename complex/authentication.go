@@ -39,8 +39,8 @@ func updateSession(db gfsql.DB, user *model.User, sessionID string) error {
 	}
 
 	c, err := result.RowsAffected()
-	if c != 1 {
-		return errors.New("failed to delete")
+	if c != 1 && c != 2 {
+		return errors.New("failed to update session")
 	}
 
 	return err
