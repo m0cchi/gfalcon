@@ -1,16 +1,12 @@
 package complex
 
 import (
-	"database/sql"
 	"errors"
 	"github.com/m0cchi/gfalcon"
 	"github.com/m0cchi/gfalcon/model"
 	"github.com/m0cchi/gfalcon/util"
 	"time"
 )
-
-// MaxChallenge is Number of times to challenge to fetch session
-const MaxChallenge = 10
 
 const LengthOfSession = 44
 
@@ -50,27 +46,11 @@ func updateSession(db gfsql.DB, user *model.User, sessionID string) error {
 	return err
 }
 
-func createNewSession(db gfsql.DB, user *model.User) (*model.Session, error) {
+func createNewSession(user *model.User) *model.Session {
 	session := &model.Session{UserIID: user.IID}
-	i := 0
-	for ; i < MaxChallenge; i++ {
-		session.SessionID = util.GenerateSessionID(LengthOfSession) // default size
-		s, err := model.GetSession(db, session.SessionID)
-		if err == sql.ErrNoRows {
-			break
-		} else if err == nil && s.Validate() != nil {
-			err = s.Delete(db)
-			if err == nil {
-				break
-			}
-		}
-	}
-	if i == MaxChallenge {
-		return nil, errors.New("Oh crap, session id was exhausted")
-	}
-
-	session.UpdateDate = time.Now().UTC() // maybe unused...
-	return session, nil
+	session.SessionID = util.GenerateSessionID(LengthOfSession) // default size
+	session.UpdateDate = time.Now().UTC()
+	return session
 }
 
 func AuthenticateWithPassword(db gfsql.DB, user *model.User, password string) (*model.Session, error) {
@@ -78,7 +58,7 @@ func AuthenticateWithPassword(db gfsql.DB, user *model.User, password string) (*
 	if err != nil {
 		return nil, err
 	}
-
+	// need userIID
 	if user.IID < 1 {
 		if user.TeamIID > 0 {
 			user, err = model.GetUser(db, user.TeamIID, user.ID)
@@ -92,11 +72,9 @@ func AuthenticateWithPassword(db gfsql.DB, user *model.User, password string) (*
 
 	session, err := getSessionID(db, user)
 	if err != nil || session == nil || session.Validate() != nil {
-		session, err = createNewSession(db, user)
-		if err != nil {
-			return nil, err
-		}
+		session = createNewSession(user)
 	}
+
 	err = updateSession(db, user, session.SessionID)
 	return session, err
 }
