@@ -12,7 +12,7 @@ const LengthOfSession = 44
 
 const SqlGetSessionByUser = "SELECT `session`, `update_date`, `user_iid` FROM `sessions` WHERE `user_iid` = :user_iid"
 
-const SqlUpsertSessions = "INSERT INTO `sessions` (`user_iid`,`session`) VALUES (:user_iid, :session) ON DUPLICATE KEY UPDATE `session` = :session"
+const SqlUpsertSessions = "INSERT INTO `sessions` (`user_iid`,`session`) VALUES (:user_iid, :session) ON DUPLICATE KEY UPDATE `session` = :session, `update_date` = CURRENT_TIMESTAMP"
 
 func getSessionID(db gfsql.DB, user *model.User) (*model.Session, error) {
 	session := &model.Session{}
