@@ -15,7 +15,6 @@ func init() {
 	gfrand = rand.New(rand.NewSource(2332141))
 	letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_-")
 	letters_size = len(letters)
-	gfrand = rand.New(rand.NewSource(1))
 	gfrand.Seed(time.Now().UnixNano())
 }
 
