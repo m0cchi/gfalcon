@@ -52,3 +52,6 @@ SP では、 ActionLink で認可の制御を実現している。
 ### Demo
 - Team/UserID/Password: gfalcon/sahohime/secret
 - https://plank.saas.m0cchi.net/
+
+# License
+Licensed under the MIT License.
