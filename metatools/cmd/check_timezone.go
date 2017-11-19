@@ -3,7 +3,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
@@ -11,6 +10,7 @@ import (
 	"time"
 )
 
+// Result of SELECT
 type Result struct {
 	T time.Time `db:"t"`
 }
@@ -36,7 +36,7 @@ func checkTimezone(source string) error {
 
 	sub := now.Sub(r.T)
 
-	return errors.New(fmt.Sprintf("diff: %v", sub))
+	return fmt.Errorf("diff: %v", sub)
 }
 
 func main() {
@@ -47,8 +47,9 @@ func main() {
 			os.Exit(1)
 		}
 	} else {
-		fmt.Println(`e.g.
-go run check_timezone.go 'gfadmin:gfadmin@unix(/tmp/mysql.sock)/gfalcon?parseTime=true&loc=Asia%2FTokyo'`)
+		msg := `e.g.
+go run check_timezone.go 'gfadmin:gfadmin@unix(/tmp/mysql.sock)/gfalcon?parseTime=true&loc=Asia%2FTokyo'`
+		fmt.Println(msg)
 		os.Exit(1)
 	}
 	os.Exit(0)
