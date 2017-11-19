@@ -10,24 +10,10 @@ import (
 
 const LengthOfSession = 44
 
-const SqlGetSessionByUser = "SELECT `session`, `update_date`, `user_iid` FROM `sessions` WHERE `user_iid` = :user_iid"
-
-const SqlUpsertSessions = "INSERT INTO `sessions` (`user_iid`,`session`) VALUES (:user_iid, :session) ON DUPLICATE KEY UPDATE `session` = :session, `update_date` = CURRENT_TIMESTAMP"
-
-func getSessionID(db gfsql.DB, user *model.User) (*model.Session, error) {
-	session := &model.Session{}
-	stmt, err := db.PrepareNamed(SqlGetSessionByUser)
-	if err != nil {
-		return nil, err
-	}
-	defer stmt.Close()
-	args := map[string]interface{}{"user_iid": user.IID}
-	err = stmt.Get(session, args)
-	return session, err
-}
+const SqlReplaceSessions = "REPLACE INTO `sessions` (`user_iid`,`session`) VALUES (:user_iid, :session)"
 
 func updateSession(db gfsql.DB, user *model.User, sessionID string) error {
-	stmt, err := db.PrepareNamed(SqlUpsertSessions)
+	stmt, err := db.PrepareNamed(SqlReplaceSessions)
 	if err != nil {
 		return err
 	}
@@ -70,10 +56,7 @@ func AuthenticateWithPassword(db gfsql.DB, user *model.User, password string) (*
 		}
 	}
 
-	session, err := getSessionID(db, user)
-	if err != nil || session == nil || session.Validate() != nil {
-		session = createNewSession(user)
-	}
+	session := createNewSession(user)
 
 	err = updateSession(db, user, session.SessionID)
 	return session, err
