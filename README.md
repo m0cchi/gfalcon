@@ -3,6 +3,7 @@
 [![BCH compliance](https://bettercodehub.com/edge/badge/m0cchi/gfalcon?branch=master)](https://bettercodehub.com/)
 [![codebeat badge](https://codebeat.co/badges/c50993b8-1cbc-4e6a-ad94-43c31c30d020)](https://codebeat.co/projects/github-com-m0cchi-gfalcon-master)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/d683d6b0287b4d7cb11c6a2893768006)](https://www.codacy.com/app/boom.boom.planet/gfalcon?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=m0cchi/gfalcon&amp;utm_campaign=Badge_Grade)
+[![Go Report Card](https://goreportcard.com/badge/github.com/m0cchi/gfalcon)](https://goreportcard.com/report/github.com/m0cchi/gfalcon)
 
 # Description
 SaaS Platform(e.g. AWS)で利用するための認証基盤。
