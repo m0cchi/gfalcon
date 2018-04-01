@@ -7,11 +7,11 @@ import (
 
 var letters []rune
 
-var letters_size int
+var lettersSize int
 
 func init() {
 	letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_-")
-	letters_size = len(letters)
+	lettersSize = len(letters)
 }
 
 func GenerateSessionID(size int) string {
@@ -19,7 +19,7 @@ func GenerateSessionID(size int) string {
 	gfrand.Seed(time.Now().UnixNano())
 	sessionID := make([]rune, size)
 	for i := range sessionID {
-		sessionID[i] = letters[gfrand.Intn(letters_size)]
+		sessionID[i] = letters[gfrand.Intn(lettersSize)]
 	}
 	return string(sessionID)
 }
