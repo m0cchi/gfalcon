@@ -9,16 +9,14 @@ var letters []rune
 
 var letters_size int
 
-var gfrand *rand.Rand
-
 func init() {
-	gfrand = rand.New(rand.NewSource(2332141))
 	letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_-")
 	letters_size = len(letters)
-	gfrand.Seed(time.Now().UnixNano())
 }
 
 func GenerateSessionID(size int) string {
+	gfrand := rand.New(rand.NewSource(2332141))
+	gfrand.Seed(time.Now().UnixNano())
 	sessionID := make([]rune, size)
 	for i := range sessionID {
 		sessionID[i] = letters[gfrand.Intn(letters_size)]
