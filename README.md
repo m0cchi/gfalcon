@@ -40,7 +40,7 @@ Cookie をサブドメイン間で共有することで SSO を実現してい�
 ### Demo
 - Team/UserID/Password: gfalcon/gfadmin/secret
 - IdP: https://saas.m0cchi.net/
-- SP:  https://note.saas.m0cchi.net/
+- SP:  https://note.m0cchi.net/
 
 # Sample SP
 ## [gfalcon-action-control-sample](https://github.com/m0cchi/gfalcon-action-control-sample)
