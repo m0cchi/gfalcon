@@ -52,7 +52,7 @@ SP では、 ActionLink で認可の制御を実現している。
 ### 参考となるコード: [gfalconにおける認可の仕方](https://github.com/m0cchi/gfalcon-action-control-sample/blob/master/server.go#L93-L97)
 ### Demo
 - Team/UserID/Password: gfalcon/sahohime/secret
-- https://plank.saas.m0cchi.net/
+- https://plank.m0cchi.net/
 
 # License
 Licensed under the MIT License.
