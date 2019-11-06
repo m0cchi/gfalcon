@@ -1,0 +1,27 @@
+version: '3.7'
+
+services:
+  mysql:
+    image: mysql:8.0.18
+    environment:
+      MYSQL_ROOT_PASSWORD: root_user_pass
+      MYSQL_ROOT_HOST: '%'
+      MYSQL_USER: gfalcon
+      MYSQL_PASSWORD: gfalcon
+      MYSQL_DATABASE: gfalcon
+    volumes:
+      - ../sql/0003_create_table.sql:/docker-entrypoint-initdb.d/0003_create_table.sql
+      - ../sql/0004_create_defaultdata.sql:/docker-entrypoint-initdb.d/0004_create_defaultdata.sql
+      - ./mysql/conf.d:/etc/mysql/conf.d
+  gfalcon:
+    build:
+      context: ../../
+      dockerfile: ./metatools/container/gfalcon/Dockerfile
+    depends_on:
+      - mysql
+    volumes:
+      - ../../:/opt/gfalcon
+    environment:
+      DATASOURCE: 'gfalcon:gfalcon@tcp(mysql:3306)/gfalcon?parseTime=true'
+    tty: true
+#    command: bash -c 'go test -v ./...'

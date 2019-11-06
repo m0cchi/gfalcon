@@ -6,7 +6,7 @@ jobs:
   build:
     docker:
       # specify the version
-      - image: circleci/golang:1.9
+      - image: circleci/golang:1.13.4-buster
       - image: circleci/mysql:5.7
         environment:
           MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
@@ -30,17 +30,16 @@ jobs:
           command: dockerize -wait tcp://localhost:3306 -timeout 1m
       - run:
           name: install mysql client
-          command: sudo apt install mysql-client
+          command: sudo apt install mariadb-client
       - run:
           name: setup db
           command: |
-            mysql -h 127.0.0.1 -u gfalcon -pgfalcon -Dcircle_test < metatools/sql/create_table.sql
-            mysql -h 127.0.0.1 -u gfalcon -pgfalcon -Dcircle_test < metatools/sql/create_defaultdata.sql
+            mysql -h 127.0.0.1 -u gfalcon -pgfalcon -Dcircle_test < metatools/sql/0003_create_table.sql
+            mysql -h 127.0.0.1 -u gfalcon -pgfalcon -Dcircle_test < metatools/sql/0004_create_defaultdata.sql
       - run:
           name: resolve dependency
           command: |
-            go get -u github.com/golang/dep/cmd/dep
-            dep ensure
+            go mod vendor
       - run:
           name: test
           environment:
