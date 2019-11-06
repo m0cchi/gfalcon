@@ -30,7 +30,7 @@ jobs:
           command: dockerize -wait tcp://localhost:3306 -timeout 1m
       - run:
           name: install mysql client
-          command: sudo apt install mysql-client
+          command: sudo apt install mariadb-client
       - run:
           name: setup db
           command: |
