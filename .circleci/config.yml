@@ -6,8 +6,8 @@ jobs:
   build:
     docker:
       # specify the version
-      - image: circleci/golang:1.13.4-buster
-      - image: circleci/mysql:5.7
+      - image: cimg/go:1.24
+      - image: cimg/mysql:8.0
         environment:
           MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
           MYSQL_ROOT_HOST: '%'
@@ -30,7 +30,7 @@ jobs:
           command: dockerize -wait tcp://localhost:3306 -timeout 1m
       - run:
           name: install mysql client
-          command: sudo apt install mariadb-client
+          command: sudo apt-get update && sudo apt-get install -y default-mysql-client
       - run:
           name: setup db
           command: |
@@ -39,7 +39,7 @@ jobs:
       - run:
           name: resolve dependency
           command: |
-            go mod vendor
+            go mod download
       - run:
           name: test
           environment:
